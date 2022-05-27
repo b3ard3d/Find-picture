@@ -36,6 +36,8 @@ class GameViewController: UIViewController {
     
     private lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: self.layout)
+        //collectionView.backgroundColor = .systemGray5
+        collectionView.backgroundColor = .clear
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(CollectionViewCell.self, forCellWithReuseIdentifier: "CollectionViewCell")
@@ -47,7 +49,7 @@ class GameViewController: UIViewController {
     private lazy var gameButton: UIButton = {
         let button = UIButton()
         button.setTitle("Начать игру", for: .normal)
-        button.backgroundColor = .systemBlue
+        button.backgroundColor = .systemGray
         button.layer.cornerRadius = 10
         button.clipsToBounds = true
         button.addTarget(self, action: #selector(self.gameButtonClicked), for: .touchUpInside)
@@ -55,18 +57,39 @@ class GameViewController: UIViewController {
         return button
     }()
     
-    private var dataSource: [String] = [ "1.jpeg",
+    private lazy var newGameButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Начать заново", for: .normal)
+        button.backgroundColor = .systemGray
+        button.layer.cornerRadius = 10
+        button.clipsToBounds = true
+        button.addTarget(self, action: #selector(self.newGameButtonClicked), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.isHidden = true
+        return button
+    }()
+    
+    private var pictureData: [String] = [ "1.jpeg",
                                          "2.jpeg",
                                          "3.jpeg",
                                          "4.jpeg",
                                          "5.jpeg",
                                          "6.jpeg",
                                          "7.jpeg",
-                                         "8.jpeg"]
-    private var tempDataSource: [String] = []
-
-    private var collectionDataSource: [String] = []
+                                         "8.jpeg",
+                                         "9.jpeg",
+                                         "10.jpeg",
+                                         "11.jpeg",
+                                         "12.jpeg",
+                                         "13.jpeg",
+                                         "14.jpeg",
+                                         "15.jpeg",
+                                         "16.jpeg"]
     
+    private var dataSource: [String] = []
+    private var tempDataSource: [String] = []
+    private var collectionDataSource: [String] = []
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
@@ -75,10 +98,13 @@ class GameViewController: UIViewController {
     }
         
     func setupView() {
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(patternImage: UIImage(named: "background.jpeg")!)
+        //view.backgroundColor = .systemGray5
         collectionView.isUserInteractionEnabled = false
         view.addSubview(collectionView)
         view.addSubview(gameButton)
+        view.addSubview(newGameButton)
+
     }
     
     func setupContraint() {
@@ -88,14 +114,22 @@ class GameViewController: UIViewController {
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -6),
             collectionView.heightAnchor.constraint(equalToConstant: 400),
             
-            gameButton.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: -20),
+            gameButton.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 10),
             gameButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 6),
             gameButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -6),
-            gameButton.heightAnchor.constraint(equalToConstant: 50)
+            gameButton.heightAnchor.constraint(equalToConstant: 50),
+            
+            newGameButton.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
+            newGameButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 6),
+            newGameButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -6),
+            newGameButton.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
     
     func initCollectionDataSource() {
+        collectionDataSource = []
+        dataSource = []
+        dataSource = pictureData
         for _ in 0...(Int(Constants.itemCount) * 2) - 1 {
             let tempIndex = Int.random(in: 0...dataSource.count - 1)
             self.tempDataSource.append(dataSource[tempIndex])
@@ -121,8 +155,25 @@ class GameViewController: UIViewController {
         for i in collectionView.indexPathsForVisibleItems {
             collectionView.cellForItem(at: i)?.contentView.isHidden = true
         }
+        UIView.animate(withDuration: 0.5) {
+            self.gameButton.isHidden = true
+        }
+    }
+    
+    @objc func newGameButtonClicked() {
         
-        gameButton.isHidden = true
+        
+        for i in collectionView.visibleCells {
+            i.isHidden = false
+            i.contentView.isHidden = false
+        }
+        initCollectionDataSource()
+        collectionView.isUserInteractionEnabled = false
+        collectionView.reloadData()                
+        UIView.animate(withDuration: 0.5) {
+            self.gameButton.isHidden = false
+            self.newGameButton.isHidden = true
+        }
     }
 }
 
@@ -137,7 +188,7 @@ extension GameViewController: UICollectionViewDataSource, UICollectionViewDelega
             cell.backgroundColor = .black
             return cell
         }
-        cell.backgroundColor = .systemGray6
+        cell.backgroundColor = .systemGray5
         cell.pictureImages.image = UIImage(named: collectionDataSource[indexPath.row])
         
         if (selectCellOne && indexPath == selectedIndexPathOne) || (selectCellTwo && indexPath == selectedIndexPathTwo) {
@@ -223,6 +274,18 @@ extension GameViewController: UICollectionViewDataSource, UICollectionViewDelega
             
             selectIndexOne = indexPath
             selectIndexTwo = nil
+        }
+        
+        //считается количество скрытых ячеек и если все ячейки срыты показывается кнопка начать заново
+        var numberOfHidden = 0
+        for i in collectionView.indexPathsForVisibleItems {
+            if ((collectionView.cellForItem(at: i)?.isHidden) == true) {
+                numberOfHidden += 1
+            }
+            if numberOfHidden == collectionView.visibleCells.endIndex {
+                newGameButton.isHidden = false
+
+            }
         }
     }
 }
