@@ -8,14 +8,24 @@
 import UIKit
 
 final class RootViewController: UIViewController {
-        
+    
+    private lazy var logoImageView: UIImageView = {
+        let imageView = UIImageView(image: UIImage(named: "logo"))
+        imageView.clipsToBounds = true
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+    
     private lazy var newGameButton: UIButton = {
         let button = UIButton()
         button.setTitle("Новая игра", for: .normal)
-    //    button.backgroundColor = .systemGray
-        button.backgroundColor = .systemRed
+        button.backgroundColor = .systemGray
         button.layer.cornerRadius = 10
-        button.clipsToBounds = true
+  //      button.clipsToBounds = true
+  /*      button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOffset = CGSize(width: 4, height: 4)
+        button.layer.shadowRadius = 4
+        button.layer.shadowOpacity = 0.7        */
         button.addTarget(self, action: #selector(self.newGameButtonClicked), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -24,9 +34,13 @@ final class RootViewController: UIViewController {
     private lazy var infoGameButton: UIButton = {
         let button = UIButton()
         button.setTitle("Инфо", for: .normal)
-        button.backgroundColor = .systemRed
+        button.backgroundColor = .systemGray
         button.layer.cornerRadius = 10
-        button.clipsToBounds = true
+ //       button.clipsToBounds = true
+  /*      button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOffset = CGSize(width: 4, height: 4)
+        button.layer.shadowRadius = 4
+        button.layer.shadowOpacity = 0.7    */
         button.addTarget(self, action: #selector(self.infoGameButtonClicked), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -46,16 +60,25 @@ final class RootViewController: UIViewController {
     }
         
     func setupView() {
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(patternImage: UIImage(named: "background.jpeg")!)
+        view.addSubview(logoImageView)
         view.addSubview(newGameButton)
         view.addSubview(infoGameButton)
-
     }
     
     func setupContraint() {
+        let screenWidth = UIScreen.main.bounds.width
+        
         NSLayoutConstraint.activate([
+            logoImageView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+      //      logoImageView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
+            logoImageView.widthAnchor.constraint(equalToConstant: screenWidth),
+            logoImageView.heightAnchor.constraint(equalToConstant: screenWidth),
+            logoImageView.bottomAnchor.constraint(equalTo: infoGameButton.bottomAnchor),
+                        
             newGameButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
             newGameButton.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
+        //    newGameButton.topAnchor.constraint(equalTo: logoImageView.bottomAnchor, constant: -50),
             newGameButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             newGameButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             newGameButton.heightAnchor.constraint(equalToConstant: 50),

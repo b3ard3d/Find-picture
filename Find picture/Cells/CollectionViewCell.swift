@@ -23,10 +23,9 @@ class CollectionViewCell: UICollectionViewCell {
         let image = UIImageView()
         image.layer.cornerRadius = 6
         image.clipsToBounds = true
- //       image.alpha = 0
+        image.layer.borderWidth = 1
+        image.layer.borderColor = UIColor.gray.cgColor
         image.isUserInteractionEnabled = true
-        let tap = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture))
-   //     image.addGestureRecognizer(tap)
         image.translatesAutoresizingMaskIntoConstraints = false
         return image
     }()
@@ -44,11 +43,5 @@ class CollectionViewCell: UICollectionViewCell {
         
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    @objc func handleTapGesture(){
-        pictureImages.alpha = 0
-        pictureImages.backgroundColor = .white
-        print(pictureImages.image!)
     }
 }
